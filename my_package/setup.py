@@ -27,6 +27,7 @@ setup(
             'my_first_node = my_package.my_first_node:main',
             'my_publisher_node = my_package.my_publisher_node:main',
             'my_subscriber_node = my_package.my_subscriber_node:main',
+            'my_service_server_node = my_package.my_service_server_node:main',
         ],
     },
 )
