@@ -29,6 +29,7 @@ setup(
             'my_subscriber_node = my_package.my_subscriber_node:main',
             'my_service_server_node = my_package.my_service_server_node:main',
             'my_service_client_node = my_package.my_service_client_node:main',
+            'my_parameter_node = my_package.my_parameter_node:main',
         ],
     },
 )
