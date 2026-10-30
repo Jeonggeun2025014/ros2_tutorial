@@ -1,0 +1,10 @@
+/**:                  # 모든 노드, 모든 이름 공간에 적용
+  ros__parameters:    # 이 줄은 항상 있어야 한다
+    
+    my_param1: 10    # my_parameter1은 10으로 설정
+    my_param2:
+      param2_1: 20   # my_param2.param2_1은 20으로 설정
+      param2_2: 30   # my_param2.param2_2은 30으로 설정
+
+
+

@@ -1,3 +1,5 @@
+import glob
+
 from setuptools import find_packages, setup
 
 package_name = 'my_package'
@@ -10,7 +12,9 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-    ],
+        ('share/' + package_name + '/launch', glob.glob('launch/*.launch.py')),
+        ('share/' + package_name + '/param', glob.glob('param/*.yaml')),
+    ], #           설치될 목적지 경로                      설치할 소스 파일 목록
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='jglim',
