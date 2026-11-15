@@ -34,6 +34,8 @@ setup(
             'my_service_server_node = my_package.my_service_server_node:main',
             'my_service_client_node = my_package.my_service_client_node:main',
             'my_parameter_node = my_package.my_parameter_node:main',
+            'my_tf2_broadcaster_node = my_package.my_tf2_broadcaster_node:main',
+            'my_tf2_listener_node = my_package.my_tf2_listener_node:main',
         ],
     },
 )
