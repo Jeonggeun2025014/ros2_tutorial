@@ -1,0 +1,7 @@
+/**:
+  ros__parameters:
+    side_length: 2.0           # 정사각형 한 변의 길이 (m)
+    linear_speed: 0.5          # 로봇 직진 속도, 항상 일정 (m/s)
+    waypoint_tolerance: 0.1    # 꼭짓점에 도착했다고 판단하는 거리 (m)
+    angular_gain: 2.0          # 각도 오차에 곱하는 비례 게인
+    max_angular_speed: 1.5     # 최대 회전 속도 제한 (rad/s)
