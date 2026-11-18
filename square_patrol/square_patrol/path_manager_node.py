@@ -9,11 +9,6 @@ from std_srvs.srv import Trigger
 
 
 class PathManagerNode(Node):
-    """한 변의 길이가 side_length인 정사각형의 네 꼭짓점을 임의의 순서로 섞어
-    nav_msgs/Path로 발행한다. /get_next_path 서비스가 호출되면 다시 섞어서 새로
-    발행한다 (한 바퀴를 다 돌고 나면 path_follower_node가 이 서비스를 호출한다).
-    """
-
     def __init__(self):
         super().__init__('path_manager_node')
 
@@ -63,7 +58,13 @@ class PathManagerNode(Node):
         ]
 
     def init_publishers(self):
-        self.path_pub = self.create_publisher(Path, 'square_path', 10)
+        # 늦게 구독을 시작한 노드도 마지막으로 발행된 Path를 받을 수 있도록
+        # TRANSIENT_LOCAL(래치) QoS 사용
+        path_qos = QoSProfile(
+            depth=1,
+            reliability=ReliabilityPolicy.RELIABLE,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        self.path_pub = self.create_publisher(Path, 'square_path', path_qos)
 
     def init_services(self):
         self.get_next_path_srv = self.create_service(

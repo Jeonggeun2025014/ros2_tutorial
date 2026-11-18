@@ -116,10 +116,15 @@ class PathFollowerNode(Node):
         self.cmd_vel_pub = self.create_publisher(Twist, 'cmd_vel', 10)
 
     def init_subscribers(self):
+        path_qos = QoSProfile(
+            depth=1,
+            reliability=ReliabilityPolicy.RELIABLE,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL)
+
         self.odom_sub = self.create_subscription(
             Odometry, 'odom', self.odom_callback, 10)
         self.path_sub = self.create_subscription(
-            Path, 'square_path', self.path_callback, 10)
+            Path, 'square_path', self.path_callback, path_qos)
 
     def init_clients(self):
         self.get_next_path_client = self.create_client(Trigger, 'get_next_path')
