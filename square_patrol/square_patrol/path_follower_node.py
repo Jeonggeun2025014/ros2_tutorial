@@ -17,13 +17,13 @@ def normalize_angle(angle):
     return angle
 
 
-class PathFollowerNode(Node):
-    """odom(현재 위치)과 square_path(목표 꼭짓점들)를 이용해 각도만 제어하고
-    속도는 일정하게 유지하며 사각형을 따라 움직인다. 꼭짓점에 waypoint_tolerance
-    이내로 가까워지면 다음 꼭짓점으로 넘어가고, 네 꼭짓점을 모두 돌면
-    /get_next_path 서비스를 호출해 새로운 랜덤 경로를 요청한다.
-    """
+def quaternion_to_yaw(x, y, z, w):
+    siny_cosp = 2.0 * (w * z + x * y)
+    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
+    return math.atan2(siny_cosp, cosy_cosp)
 
+
+class PathFollowerNode(Node):
     def __init__(self):
         super().__init__('path_follower_node')
 
@@ -68,10 +68,11 @@ class PathFollowerNode(Node):
         self.current_x = msg.pose.pose.position.x
         self.current_y = msg.pose.pose.position.y
 
+        qx = msg.pose.pose.orientation.x
+        qy = msg.pose.pose.orientation.y
         qz = msg.pose.pose.orientation.z
         qw = msg.pose.pose.orientation.w
-        # 로봇이 z축으로만 회전하므로 (qx=qy=0), yaw는 이렇게 간단히 구해진다
-        self.current_yaw = 2.0 * math.atan2(qz, qw)
+        self.current_yaw = quaternion_to_yaw(qx, qy, qz, qw)
 
     def path_callback(self, msg):
         self.path = msg
@@ -140,3 +141,6 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
+
+

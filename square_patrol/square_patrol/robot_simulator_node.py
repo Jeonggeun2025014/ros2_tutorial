@@ -7,6 +7,23 @@ from nav_msgs.msg import Odometry
 from tf2_ros import TransformBroadcaster
 
 
+def euler_to_quaternion(roll, pitch, yaw):
+    # roll(x축 회전), pitch(y축 회전), yaw(z축 회전)를 쿼터니언(x,y,z,w)으로 변환하는
+    # 일반 공식. 이 로봇은 평면 위에서만 움직이므로 roll=pitch=0으로 호출된다.
+    cr = math.cos(roll / 2.0)
+    sr = math.sin(roll / 2.0)
+    cp = math.cos(pitch / 2.0)
+    sp = math.sin(pitch / 2.0)
+    cy = math.cos(yaw / 2.0)
+    sy = math.sin(yaw / 2.0)
+
+    qx = sr * cp * cy - cr * sp * sy
+    qy = cr * sp * cy + sr * cp * sy
+    qz = cr * cp * sy - sr * sp * cy
+    qw = cr * cp * cy + sr * sp * sy
+    return qx, qy, qz, qw
+
+
 class RobotSimulatorNode(Node):
     def __init__(self):
         super().__init__('robot_simulator_node')
@@ -24,9 +41,8 @@ class RobotSimulatorNode(Node):
 
         now = self.get_clock().now().to_msg()
 
-        # z축 회전만 있으므로 쿼터니언은 간단히 계산 가능 (qx=qy=0)
-        qz = math.sin(self.theta / 2.0)
-        qw = math.cos(self.theta / 2.0)
+        # roll=0, pitch=0, yaw=self.theta (평면 이동이라 z축으로만 회전)
+        qx, qy, qz, qw = euler_to_quaternion(0.0, 0.0, self.theta)
 
         odom = Odometry()
         odom.header.stamp = now
@@ -34,6 +50,8 @@ class RobotSimulatorNode(Node):
         odom.child_frame_id = 'base_link'
         odom.pose.pose.position.x = self.x
         odom.pose.pose.position.y = self.y
+        odom.pose.pose.orientation.x = qx
+        odom.pose.pose.orientation.y = qy
         odom.pose.pose.orientation.z = qz
         odom.pose.pose.orientation.w = qw
         odom.twist.twist.linear.x = self.linear_x
@@ -46,6 +64,8 @@ class RobotSimulatorNode(Node):
         t.child_frame_id = 'base_link'
         t.transform.translation.x = self.x
         t.transform.translation.y = self.y
+        t.transform.rotation.x = qx
+        t.transform.rotation.y = qy
         t.transform.rotation.z = qz
         t.transform.rotation.w = qw
         self.tf_broadcaster.sendTransform(t)
@@ -83,3 +103,4 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
