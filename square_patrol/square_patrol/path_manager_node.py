@@ -17,27 +17,10 @@ class PathManagerNode(Node):
     def __init__(self):
         super().__init__('path_manager_node')
 
-        self.declare_parameter('side_length', 2.0)
-        side = self.get_parameter('side_length').value
-
-        # 정사각형 네 꼭짓점 좌표 (좌표 자체는 고정, 방문 순서만 매번 랜덤하게 섞임)
-        self.corners = [
-            (0.0, 0.0),
-            (side, 0.0),
-            (side, side),
-            (0.0, side),
-        ]
-
-        # 늦게 구독을 시작한 노드도 마지막으로 발행된 Path를 받을 수 있도록
-        # TRANSIENT_LOCAL(래치) QoS 사용
-        path_qos = QoSProfile(
-            depth=1,
-            reliability=ReliabilityPolicy.RELIABLE,
-            durability=DurabilityPolicy.TRANSIENT_LOCAL)
-        self.path_pub = self.create_publisher(Path, 'square_path', path_qos)
-
-        self.get_next_path_srv = self.create_service(
-            Trigger, 'get_next_path', self.get_next_path_callback)
+        self.init_parameters()
+        self.init_variables()
+        self.init_publishers()
+        self.init_services()
 
         self.publish_random_path()
 
@@ -64,6 +47,27 @@ class PathManagerNode(Node):
         response.success = True
         response.message = 'New random path published'
         return response
+
+    def init_parameters(self):
+        self.declare_parameter('side_length', 2.0)
+        self.side_length = self.get_parameter('side_length').value
+
+    def init_variables(self):
+        # 정사각형 네 꼭짓점 좌표 (좌표 자체는 고정, 방문 순서만 매번 랜덤하게 섞임)
+        side = self.side_length
+        self.corners = [
+            (0.0, 0.0),
+            (side, 0.0),
+            (side, side),
+            (0.0, side),
+        ]
+
+    def init_publishers(self):
+        self.path_pub = self.create_publisher(Path, 'square_path', 10)
+
+    def init_services(self):
+        self.get_next_path_srv = self.create_service(
+            Trigger, 'get_next_path', self.get_next_path_callback)
 
 
 def main(args=None):
